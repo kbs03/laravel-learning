@@ -1,0 +1,183 @@
+1) api authentication 
+- frontend key authentication and 
+- backend key authentication through passprt 
+- token revoke at logout 
+- create passport token while login ( )
+
+- roles and permission module user should not able to hit the url ..for dont have permission 
+- auto create route , and , controller , for menu 
+
+makes a postman collection 
+
+
+menu are for display and 
+submenu are permission 
+
+some user track idea 
+save ip and time at admin login 
+evry table has createdby and updated by entry 
+
+: structure for api call :
+trait ApiHelperTrait
+{
+
+    protected $frontendApiKey = 'IHE5gy79EPB0Bon4RPflWeH4cuSyjwQX';
+
+    protected function makeApiCall($url, $method = 'GET', $params = [], $files = [], $isFrontend = false)
+    {
+        $request = Request::create($url, $method, $params, [], $files, $_SERVER);
+        
+        if ($isFrontend) {
+           
+            $request->headers->set('X-API-KEY', $this->frontendApiKey);
+        } else {
+   
+            if ($token = session('api_token')) {
+                $request->headers->set('Authorization', 'Bearer ' . $token);
+            }
+        }
+        
+        $response = app()->handle($request);
+        
+        return json_decode($response->getContent(), true);
+    }
+}
+
+
+stndard api create structure ::
+
+ public function store(Request $request)
+    {
+        try{
+ 
+        $validator= $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email_id' => 'required|string|email|max:255|unique:admin_user_info',
+            'username' => 'required|string|max:255|unique:admin_user_info',
+            'password' => ['required','string', 'min:8','regex:/[a-z]/', 'regex:/[A-Z]/','regex:/[^a-zA-Z0-9]/',],
+            'mobile_no' => 'required|string|max:20',
+            'role_id' => 'required|integer|exists:roles,id',
+            'state_id' => 'required|integer|exists:state_cities,id',
+            'city_id' => 'required|integer|exists:state_cities,id',
+        ],[
+            'first_name.required' => '',
+        ]);
+        
+        $state = StateCity::find($request->state_id);
+        $city = StateCity::find($request->city_id);
+     
+        $data = $validator->validated();
+        $user = AdminUserInfo::create($data);
+            
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Admin user created successfully',
+            'data' => $user
+        ], 201);
+
+    }catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation failed',
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to create admin user',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+
+
+    }
+
+    standard api call structure ::
+
+public function create()
+    {
+        try {
+            $responseData = $this->makeApiCall('api/yd-admin/admin-users/create');
+            
+            if (!($responseData['success'] ?? false) || !isset($responseData['data'])) {
+                throw new \Exception($responseData['message'] ?? 'Failed to fetch create form data');
+            }
+            
+            return view('admin2.admin-users.create', $responseData['data']);
+            
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Store a newly created admin user
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email_id' => 'required|string|email|max:255',
+            'username' => 'required|string|max:255',
+            'password' => 'required|string|min:8',
+            'mobile_no' => 'required|string|max:20',
+            'role_id' => 'required|integer',
+            'state_id' => 'required|integer',
+            'city_id' => 'required|integer',
+        ]);
+
+        try {
+            $responseData = $this->makeApiCall(
+                'api/yd-admin/admin-users',
+                'POST',
+                $request->all()
+            );
+            
+            if ($responseData['success'] ?? false) {
+                return redirect()->route('admin-users.index')
+                    ->with('success', 'Admin user created successfully');
+            }
+            else
+            {    
+            $errors = $responseData['errors'] ?? [];
+            return back()->withInput()->withErrors($errors);
+            }
+            
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', $e->getMessage());
+        }
+    }    
+
+
+and print error message in 
+        @if (session('success'))
+        <div class="alert alert-success">
+        {{ session('success') }}
+        </div>
+        @elseif (session('error'))
+        <div class="alert alert-danger">
+        {{ session('error') }}
+        </div>
+        @endif
+
+        @if ($errors->any())
+        <div class="alert alert-danger">
+        <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+        </ul>
+        </div>
+        @endif
+
+it should in toast in layout 
+
+
+csv import dont 
+
+
+- 404 page redirection 
+- coming soon page 

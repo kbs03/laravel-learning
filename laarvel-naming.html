@@ -1,0 +1,159 @@
+# Laravel Naming Conventions: A Complete Guide
+
+Following consistent naming conventions in Laravel makes your code more readable, maintainable, and predictable. Here's a comprehensive guide to Laravel naming conventions:
+
+## 1. **General PHP Conventions**
+- **Class names**: `PascalCase` (e.g., `UserController`)
+- **Methods/functions**: `camelCase` (e.g., `getUserData`)
+- **Variables**: `camelCase` (e.g., `$userProfile`)
+- **Constants**: `UPPER_SNAKE_CASE` (e.g., `MAX_FILE_SIZE`)
+
+## 2. **Laravel-Specific Conventions**
+
+### **Controllers**
+- **Name**: Singular PascalCase with `Controller` suffix
+- **Example**: `UserController.php`, `PostCommentController.php`
+- **Methods**: Follow RESTful conventions:
+  - `index()` - List resources
+  - `show()` - Show single resource
+  - `create()` - Show creation form
+  - `store()` - Store new resource
+  - `edit()` - Show edit form
+  - `update()` - Update resource
+  - `destroy()` - Delete resource
+
+### **Models**
+- **Name**: Singular PascalCase
+- **Example**: `User.php`, `PostComment.php`
+- **Table name**: Plural snake_case (auto-detected)
+  - `User` → `users`
+  - `PostComment` → `post_comments`
+- **Primary key**: `id` (default)
+- **Foreign keys**: `singular_table_name_id` (e.g., `user_id`, `post_comment_id`)
+- **Pivot tables**: Alphabetical singular snake_case (e.g., `role_user`)
+
+### **Database Migrations**
+- **File name**: `YYYY_MM_DD_HHMMSS_description_in_snake_case.php`
+- **Example**: `2023_01_15_093000_create_users_table.php`
+- **Table name**: Plural snake_case in migration file:
+  ```php
+  Schema::create('post_comments', function (Blueprint $table) { ... });
+  ```
+
+### **Views (Blade Templates)**
+- **File name**: Lowercase with dots for hierarchy
+- **Example**: 
+  - `users/show.blade.php`
+  - `admin/posts/index.blade.php`
+
+### **Routes**
+- **Resource routes**: Plural
+  ```php
+  Route::resource('users', UserController::class);
+  ```
+- **Route names**: dot notation
+  ```php
+  Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
+  ```
+
+### **Artisan Commands**
+- **Name**: colon-separated lowercase
+- **Example**: `make:controller`, `cache:clear`
+
+### **Traits**
+- **Name**: PascalCase with `Trait` suffix
+- **Example**: `HasApiTokensTrait.php`
+
+### **Service Providers**
+- **Name**: PascalCase with `ServiceProvider` suffix
+- **Example**: `AuthServiceProvider.php`, `EventServiceProvider.php`
+
+### **Middleware**
+- **Name**: PascalCase with `Middleware` suffix
+- **Example**: `AuthenticateMiddleware.php`, `TrimStringsMiddleware.php`
+
+### **Jobs**
+- **Name**: PascalCase with `Job` suffix
+- **Example**: `ProcessPodcastJob.php`, `SendWelcomeEmailJob.php`
+
+### **Events**
+- **Name**: PascalCase with past-tense verb
+- **Example**: `UserRegistered.php`, `OrderShipped.php`
+
+### **Listeners**
+- **Name**: PascalCase with `Listener` suffix
+- **Example**: `SendWelcomeEmailListener.php`, `ProcessPodcastListener.php`
+
+### **Notifications**
+- **Name**: PascalCase with `Notification` suffix
+- **Example**: `InvoicePaidNotification.php`
+
+### **Requests (Form Requests)**
+- **Name**: PascalCase with `Request` suffix
+- **Example**: `StoreUserRequest.php`, `UpdateProfileRequest.php`
+
+### **Resources (API Resources)**
+- **Name**: PascalCase with `Resource` suffix
+- **Example**: `UserResource.php`, `PostCollection.php`
+
+### **Policies**
+- **Name**: PascalCase with `Policy` suffix
+- **Example**: `UserPolicy.php`, `PostPolicy.php`
+
+### **Helpers**
+- **Global functions**: snake_case
+- **Example**: `array_get()`, `str_plural()`
+
+### **Config Files**
+- **File name**: lowercase snake_case
+- **Example**: `auth.php`, `database.php`
+
+### **Tests**
+- **Feature tests**: `Test` suffix
+  - `UserRegistrationTest.php`
+- **Unit tests**: `Test` suffix
+  - `UserModelTest.php`
+
+## 3. **Additional Best Practices**
+
+1. **Be consistent** within your project
+2. **Follow Laravel's defaults** unless you have good reason to deviate
+3. **Keep names descriptive but concise**
+4. **Avoid abbreviations** unless they're very common
+5. **Use singular/plural correctly**:
+   - Models: singular (`User`)
+   - Tables: plural (`users`)
+   - Controllers: usually plural (`UsersController`)
+
+## 4. **Example of Well-Named Components**
+
+```
+app/
+├── Console/
+│   ├── Commands/
+│   │   └── BackupDatabaseCommand.php
+├── Http/
+│   ├── Controllers/
+│   │   ├── UserController.php
+│   │   └── Admin/
+│   │       └── DashboardController.php
+│   ├── Middleware/
+│   │   └── AuthenticateMiddleware.php
+│   ├── Requests/
+│   │   └── StoreUserRequest.php
+│   └── Resources/
+│       └── UserResource.php
+├── Models/
+│   └── User.php
+├── Policies/
+│   └── UserPolicy.php
+tests/
+├── Feature/
+│   └── UserRegistrationTest.php
+database/
+├── migrations/
+│   └── 2023_01_15_000000_create_users_table.php
+```
+
+Following these conventions will make your Laravel codebase more professional and easier to maintain.
+
